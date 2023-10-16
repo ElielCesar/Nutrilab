@@ -19,7 +19,7 @@ from django.contrib import auth
 def cadastro(request):
     if request.method == 'GET':
         # se já está autenticado não pode se cadastrar
-        if request.user.is_autenticated:  
+        if request.user.is_authenticated:
             return redirect('/')
         
         return render(request, 'cadastro.html')
@@ -40,7 +40,7 @@ def cadastro(request):
                                             is_active=False)
             user.save()
             messages.add_message(request, constants.SUCCESS, 'Usuário cadastrado com sucesso!')
-            return redirect('/auth/logar')
+            return redirect('/auth/login')
         except:
             messages.add_message(request, constants.ERROR, 'Erro interno do sistema')
             return redirect('/auth/cadastro')
@@ -50,8 +50,8 @@ def cadastro(request):
 def login(request):
     if request.method == 'GET':
         # se ja está autenticado não pode acessar a página de login
-        if request.user.is_autenticated: 
-            return redirect('/') 
+        if request.user.is_authenticated:
+            return redirect('/pacientes/') 
         
         return render(request, 'login.html')
     
@@ -66,7 +66,7 @@ def login(request):
             return redirect('/auth/login')
         else:
             auth.login(request, usuario_existe)
-            return redirect('/')
+            return redirect('/pacientes')
 
 def sair(request):
     auth.logout(request)
