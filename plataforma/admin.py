@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Pacientes, DadosPaciente
+from .models import Pacientes, DadosPaciente, Refeicao, Opcao
 # Register your models here.
 
 class PacientesAdmin(admin.ModelAdmin):
@@ -10,3 +10,8 @@ class DadosPacienteAdmin(admin.ModelAdmin):
 
 admin.site.register(Pacientes, PacientesAdmin)
 admin.site.register(DadosPaciente, DadosPacienteAdmin)
+admin.site.register(Refeicao)
+admin.site.register(Opcao)
+
+
+

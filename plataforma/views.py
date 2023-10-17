@@ -11,6 +11,7 @@ from django.contrib.messages import constants
 
 # models utilizados nas vies
 from .models import Pacientes, DadosPaciente
+from .models import Refeicao, Opcao
 
 # vai desabilitar o csrf para os gráficos
 from django.views.decorators.csrf import csrf_exempt
@@ -18,7 +19,8 @@ from django.views.decorators.csrf import csrf_exempt
 # importar Json para retornar para os gráficos
 from django.http import JsonResponse
 
-# Create your views here.
+
+'''Inicio do bloco para cadastro de pacientes'''
 @login_required(login_url='/auth/logar/')
 def pacientes(request):
     if request.method == 'GET':
@@ -68,6 +70,7 @@ def pacientes(request):
              return redirect('/pacientes/')
         
 
+'''Inicio do bloco dados de pacientes'''
 @login_required(login_url='/auth/logar/')
 def dados_paciente_listar(request):
     if request.method == "GET":
@@ -128,3 +131,66 @@ def grafico_peso(request, id):
     data = {'peso': pesos,
             'labels': labels}
     return JsonResponse(data)
+
+
+
+'''Inicio do bloco plano alimentar'''
+def plano_alimentar_listar(request):
+    if request.method == "GET":
+        pacientes = Pacientes.objects.filter(nutri=request.user)
+        return render(request, 'plano_alimentar_listar.html', {'pacientes': pacientes})
+    
+
+def plano_alimentar(request, id):
+    paciente = get_object_or_404(Pacientes, id=id)
+    if not paciente.nutri == request.user:
+        messages.add_message(request, constants.ERROR, 'Esse paciente não é seu')
+        return redirect('/dados_paciente/')
+
+    if request.method == "GET":
+        refeicoes = Refeicao.objects.filter(paciente=paciente).order_by('horario')
+        opcoes = Opcao.objects.all()
+        return render(request, 'plano_alimentar.html', {'paciente': paciente, 'refeicoes':refeicoes, 'opcoes':opcoes})
+
+
+def refeicao(request, id_paciente):
+    paciente = get_object_or_404(Pacientes, id=id_paciente)
+    if not paciente.nutri == request.user:
+        messages.add_message(request, constants.ERROR, 'Esse paciente não é seu')
+        return redirect('/dados_paciente/')
+
+    if request.method == "POST":
+        titulo = request.POST.get('titulo')
+        horario = request.POST.get('horario')
+        carboidratos = request.POST.get('carboidratos')
+        proteinas = request.POST.get('proteinas')
+        gorduras = request.POST.get('gorduras')
+
+        r1 = Refeicao(paciente=paciente,
+                      titulo=titulo,
+                      horario=horario,
+                      carboidratos=carboidratos,
+                      proteinas=proteinas,
+                      gorduras=gorduras)
+
+        r1.save()
+
+        messages.add_message(request, constants.SUCCESS, 'Refeição cadastrada')
+        return redirect(f'/plano_alimentar/{id_paciente}')
+
+
+def opcao(request, id_paciente):
+    if request.method == "POST":
+        id_refeicao = request.POST.get('refeicao')
+        imagem = request.FILES.get('imagem')
+        descricao = request.POST.get("descricao")
+
+        o1 = Opcao(refeicao_id=id_refeicao,
+                   imagem=imagem,
+                   descricao=descricao)
+
+        o1.save()
+
+        messages.add_message(request, constants.SUCCESS, 'Opcao cadastrada')
+        return redirect(f'/plano_alimentar/{id_paciente}')
+    
