@@ -1,18 +1,17 @@
-from selenium import webdriver 
 from selenium.webdriver.common.by import By 
 from django.test import LiveServerTestCase
 import pytest
 from time import sleep
 import conftest
 
-@pytest.mark.usefixtures("setup_teardown")
+@pytest.mark.usefixtures("setup_teardown_login")
 class Test_Login_Page(LiveServerTestCase):
 
     # Testa a presença da imagem no elemento
     def test_1_logo_projeto_existe(self):
         driver = conftest.driver 
         imagem = driver.find_element(By.XPATH, '/html/body/div/div/div[1]/div/h2/img')
-        sleep(5)
+        sleep(3)
         assert imagem.is_displayed()
 
     # Testa login bem sucedido
@@ -43,13 +42,12 @@ class Test_Cadastrar_Paciente(LiveServerTestCase):
     # cadastrar novo paciente
     def test_1_novo_paciente(self):
         driver = conftest.driver
-        driver.find_element(By.CSS_SELECTOR, 'body > div > div > div.col-md-9 > button')
-        btn_adicionar.click()
-        sleep(1)
-
+        driver.find_element(By.XPATH, '/html/body/div/div/div[2]/button').click()
+        sleep(3)
+        
         paciente = driver.find_element(By.XPATH, '//*[@id="modal"]/div/div/div[2]/form/div/div[2]/input')
         paciente.send_keys('selenium')
-
+        
         idade = driver.find_element(By.XPATH, '//*[@id="modal"]/div/div/div[2]/form/input[2]')
         idade.send_keys('33')
 
@@ -60,8 +58,35 @@ class Test_Cadastrar_Paciente(LiveServerTestCase):
         telefone.send_keys('069 99246-5207')
         sleep(2)
 
-        salvar = driver.find_element(By.XPATH, '//*[@id="modal"]/div/div/div[2]/form/input[5]')
-        salvar.click()
-
+        # clicar em salvar
+        driver.find_element(By.XPATH, '//*[@id="modal"]/div/div/div[2]/form/input[5]').click()
+    
         msg_sucesso = driver.find_element(By.CLASS_NAME, 'alert-success')
         assert msg_sucesso.is_displayed()
+
+        # testar mensagem de falha de usuário duplicado
+
+    # cadastrar novo paciente
+    def test_2_paciente_repetido_erro(self):
+        driver = conftest.driver
+        driver.find_element(By.XPATH, '/html/body/div/div/div[2]/button').click()
+        sleep(3)
+        
+        paciente = driver.find_element(By.XPATH, '//*[@id="modal"]/div/div/div[2]/form/div/div[2]/input')
+        paciente.send_keys('selenium')
+        
+        idade = driver.find_element(By.XPATH, '//*[@id="modal"]/div/div/div[2]/form/input[2]')
+        idade.send_keys('33')
+
+        email = driver.find_element(By.XPATH, '//*[@id="modal"]/div/div/div[2]/form/input[3]')
+        email.send_keys('selenium@gmail.com')
+
+        telefone = driver.find_element(By.XPATH, '//*[@id="modal"]/div/div/div[2]/form/input[4]')
+        telefone.send_keys('069 99246-5207')
+        sleep(2)
+
+        # clicar em salvar
+        driver.find_element(By.XPATH, '//*[@id="modal"]/div/div/div[2]/form/input[5]').click()
+    
+        msg_erro = driver.find_element(By.CLASS_NAME, 'alert-danger')
+        assert msg_erro.is_displayed()
