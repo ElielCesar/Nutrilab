@@ -4,7 +4,12 @@
 
 {% block 'plataforma' %}
 
-<div class="container rounded shadow mt-5 pb-5" style="width: 50vw; height: auto;">
+<div class="container rounded shadow mt-4 pb-4" style="width: 50vw; height: auto;">
+
+    <div class="container text-center pt-2">
+        <h3>Editar Paciente</h3>
+        <hr>
+    </div>
 
     <form action="{% url 'editar_paciente' paciente.id %}" method="post">
         {% csrf_token %}
