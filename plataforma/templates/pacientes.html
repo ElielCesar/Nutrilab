@@ -21,8 +21,8 @@
     <!--Card-->
     <div  class="row">
         {% for paciente in todos_pacientes %}
-        <div class="col-md-3 mb-3">
-            <a href="#" class="link-hover">
+        <div class="col-md-4 mb-3">
+            <a href="{% url 'plano_alimentar_listar' %}" class="text-dark" style="text-decoration: none;">
                 <div class="card-paciente">
                     <div class="foto-perfil">
                         {% if paciente.sexo == 'F' %}
@@ -34,20 +34,21 @@
                     <br>
                     <p class="dados">{{paciente.nome}}</p>
                     <p class="dados">{{paciente.idade}} Anos</p>
+                </a>
                     <!--TO DO : FAZER UPADATE E DELETE NESSES CARDS-->
                     <p class="d-flex justify-content-end align-items-center">
-                        <span class="ml-3"><i class="bi bi-pencil-fill fs-4"></i></span>
-                        <span class="ml-3"><i class="bi bi-trash3-fill fs-4"></i></span>
+                        <span class="ml-3"><a href="{% url 'editar_paciente' paciente.id%}"><i class="bi bi-pencil-fill fs-4"></i></a></span>
+                        <span class="ml-3"><a href="{% url 'deletar_paciente' paciente.id %}"><i class="bi bi-trash3-fill fs-4"></i></a></span>
                     </p>
                 </div>
-            </a>
+            
         </div>
         {% endfor %}
     </div>
 
 
 
-    <!--Modal-->
+    <!--Modal Cadastrar-->
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -107,5 +108,22 @@
             </div>
         </div>
     </div>
+
+    <!--Modal Editar Paciente-->
+    <div class="modal fade" id="modal_editar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                ...
+                <div class="modal-body">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        <input type="submit" class="btn btn-success btn-lg" value="Atualizar">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 
 {% endblock %}

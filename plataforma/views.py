@@ -1,6 +1,7 @@
 # Utilitários para renderizar, responder e redirecionar
 from datetime import datetime
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
+from django.http import JsonResponse
 
 # verifica se o usuário está logado no sistema
 from django.contrib.auth.decorators import login_required
@@ -18,6 +19,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 # importar Json para retornar para os gráficos
 from django.http import JsonResponse
+
+# forms usados nas views
+from .forms import PacienteForm
 
 
 '''Inicio do bloco para cadastro de pacientes'''
@@ -135,12 +139,14 @@ def grafico_peso(request, id):
 
 
 '''Inicio do bloco plano alimentar'''
+@login_required(login_url='/auth/logar/')
 def plano_alimentar_listar(request):
     if request.method == "GET":
         pacientes = Pacientes.objects.filter(nutri=request.user)
         return render(request, 'plano_alimentar_listar.html', {'pacientes': pacientes})
     
 
+@login_required(login_url='/auth/logar/')
 def plano_alimentar(request, id):
     paciente = get_object_or_404(Pacientes, id=id)
     if not paciente.nutri == request.user:
@@ -152,7 +158,7 @@ def plano_alimentar(request, id):
         opcoes = Opcao.objects.all()
         return render(request, 'plano_alimentar.html', {'paciente': paciente, 'refeicoes':refeicoes, 'opcoes':opcoes})
 
-
+@login_required(login_url='/auth/logar/')
 def refeicao(request, id_paciente):
     paciente = get_object_or_404(Pacientes, id=id_paciente)
     if not paciente.nutri == request.user:
@@ -179,6 +185,7 @@ def refeicao(request, id_paciente):
         return redirect(f'/plano_alimentar/{id_paciente}')
 
 
+@login_required(login_url='/auth/logar/')
 def opcao(request, id_paciente):
     if request.method == "POST":
         id_refeicao = request.POST.get('refeicao')
@@ -193,4 +200,33 @@ def opcao(request, id_paciente):
 
         messages.add_message(request, constants.SUCCESS, 'Opcao cadastrada')
         return redirect(f'/plano_alimentar/{id_paciente}')
+
+@login_required(login_url='/auth/logar/')
+def deletar_paciente(request, id_paciente):
+    if request.method == 'GET':
+        paciente = Pacientes.objects.filter(pk=id_paciente, nutri=request.user)
+        if paciente.exists():
+            paciente.delete()
+            messages.add_message(request, constants.SUCCESS, 'Paciente excluído com sucesso!')
+            return redirect('/pacientes/')
+        
+        else:
+            messages.add_message(request, constants.ERROR, 'Paciente não existe no sistema!')
+            return redirect('/pacientes/')
+
+
+@login_required()
+def editar_paciente(request, paciente_id):
+    paciente = get_object_or_404(Pacientes, id=paciente_id)
+
+    if request.method == 'POST':
+        form = PacienteForm(request.POST, instance=paciente)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, constants.SUCCESS, 'Paciente atualizado!')
+            return redirect('/pacientes/')
+        
+    else:
+        form = PacienteForm(instance=paciente)
     
+    return render(request, 'editar_paciente.html', {'form': form, 'paciente':paciente})

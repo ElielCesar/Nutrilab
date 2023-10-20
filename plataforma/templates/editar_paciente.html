@@ -1,0 +1,18 @@
+{% extends 'base_plataforma.html' %}
+
+{% load static %}
+
+{% block 'plataforma' %}
+
+<div class="container rounded shadow mt-5 pb-5" style="width: 50vw; height: auto;">
+
+    <form action="{% url 'editar_paciente' paciente.id %}" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+
+        <input type="submit" class="btn btn-outline-success w-100" value="Atualizar">
+    </form>
+</div>
+
+{% endblock %}
+

@@ -15,7 +15,7 @@
 		<h1 class="titulo">Escolha o paciente</h1>
     <div  class="row">
         {% for paciente in todos_pacientes%}
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-3">
                 <a href="{% url 'dados_paciente' paciente.id %}" class="link-hover">
                     <div class="card-paciente">
                         <div class="foto-perfil">
