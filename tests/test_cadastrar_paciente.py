@@ -4,7 +4,7 @@ import pytest
 import conftest
 
 # aqui vão vir os page objects para otimizar o código
-from pages.add_paciente import Paciente_Add
+from pages.cadastrar_paciente import Paciente_Add
 
 @pytest.mark.usefixtures("setup_teardown")
 class Test_Cadastrar_Paciente(LiveServerTestCase):
