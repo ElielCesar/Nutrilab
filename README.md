@@ -25,6 +25,6 @@ O Nutrilab tem como objetivo principal oferecer aos nutricionistas uma ferrament
   <img src="/assets/img1.jpeg" width="350">
   <img src="/assets/img2.jpeg" width="350">
   <img src="/assets/img3.jpeg" width="350">
-  <img src="/assets/img4.jpeg" width="350">
+  <img src="/assets/img4.jpeg" width="390">
   <img src="/assets/img5.jpeg" width="350">
 </p>
